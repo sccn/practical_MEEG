@@ -26,7 +26,10 @@ clear;
 clear globals;
 
 % Path to data belo. Using relative paths so no need to update.
-RootFolder = fileparts(pwd); % Getting root folder
+RootFolder = '/System/Volumes/Data/data/practicalMEEG'; 
+if ~exist(RootFolder)
+    RootFolder = fileparts(pwd); % Getting root folder
+end
 path2data = fullfile(RootFolder,'Data', 'sub-01') % Path to data 
 filename = 'wh_S01_run_01_preprocessing_data_session_1_out.set';
 
@@ -56,7 +59,7 @@ ALLEEG(4) = pop_rmbase(ALLEEG(4), [-1000 0]);
 [ALLEEG(2), rejindx] = pop_eegthresh(ALLEEG(2), 1, 1:ALLEEG(2).nbchan, -400, 400, ALLEEG(2).xmin, ALLEEG(2).xmax, 0, 1);
 [ALLEEG(3), rejindx] = pop_eegthresh(ALLEEG(3), 1, 1:ALLEEG(3).nbchan, -400, 400, ALLEEG(3).xmin, ALLEEG(3).xmax, 0, 1);
 [ALLEEG(4), rejindx] = pop_eegthresh(ALLEEG(4), 1, 1:ALLEEG(4).nbchan, -400, 400, ALLEEG(4).xmin, ALLEEG(4).xmax, 0, 1);
-
+return
 
 %% plot ERP scalp distribution 
 figure; pop_timtopo(ALLEEG(2), [-100  600], [NaN], 'ERP data and scalp maps of Famous Epoched');
@@ -127,8 +130,8 @@ figure; pop_plottopo(ALLEEG(4), [1:64] , 'Scrambled', 0, 'ydir',1);
 Chanind = find(strcmp({ALLEEG(2).chanlocs.labels},'eeg065'));
 
 % create timevector for plotting 
-[val, indL] = min(abs(EEG.times+200)); %get timepoints for -200 and 800 Latencies
-[val, indU] = min(abs(EEG.times-800));
+[val, indL] = min(abs(ALLEEG(2).times+200)); %get timepoints for -200 and 800 Latencies
+[val, indU] = min(abs(ALLEEG(2).times-800));
 timevec = ALLEEG(2).times(indL:indU); % create timevector
 
 % clear aa
@@ -143,11 +146,11 @@ timevec = ALLEEG(2).times(indL:indU); % create timevector
 
 % create datavectors for plotting
 av_datavecF = mean(ALLEEG(2).data(Chanind,indL:indU,:),3); % average
-std_datavec = std(ALLEEG(2).data(Chanind,indL:indU,:),1,3); % standard deviation
+std_datavecF = std(ALLEEG(2).data(Chanind,indL:indU,:),1,3); % standard deviation
 
 figure;
 X2 = [[timevec],fliplr([timevec])];                %#create continuous x value array for plotting
-Y2 = [av_datavecF-std_datavec,fliplr(av_datavecF+std_datavec)];              %#create y values for out and then back
+Y2 = [av_datavecF-std_datavecF,fliplr(av_datavecF+std_datavecF)];              %#create y values for out and then back
 fill(X2,Y2,[153/255 204/255 255/255]);
 hold on
 plot(timevec,av_datavecF, 'b', 'LineWidth',2)
@@ -159,11 +162,11 @@ title('famous')
 set(gca, 'FontSize', 15)
 
 av_datavecU = mean(ALLEEG(3).data(Chanind,indL:indU,:),3); % average
-std_datavec = std(ALLEEG(3).data(Chanind,indL:indU,:),1,3); % standard deviation
+std_datavecU = std(ALLEEG(3).data(Chanind,indL:indU,:),1,3); % standard deviation
 
 figure;
 X2 = [[timevec],fliplr([timevec])];                %#create continuous x value array for plotting
-Y2 = [av_datavecU-std_datavec,fliplr(av_datavecU+std_datavec)];              %#create y values for out and then back
+Y2 = [av_datavecU-std_datavecU,fliplr(av_datavecU+std_datavecU)];              %#create y values for out and then back
 fill(X2,Y2,[153/255 204/255 255/255]);
 hold on
 plot(timevec,av_datavecU, 'b', 'LineWidth',2)
@@ -175,11 +178,11 @@ title('unfamiliar')
 set(gca, 'FontSize', 15)
 
 av_datavecS = mean(ALLEEG(4).data(Chanind,indL:indU,:),3); % average
-std_datavec = std(ALLEEG(4).data(Chanind,indL:indU,:),1,3); % standard deviation
+std_datavecS = std(ALLEEG(4).data(Chanind,indL:indU,:),1,3); % standard deviation
 
 figure;
 X2 = [[timevec],fliplr([timevec])];                %#create continuous x value array for plotting
-Y2 = [av_datavecS-std_datavec,fliplr(av_datavecS+std_datavec)];              %#create y values for out and then back
+Y2 = [av_datavecS-std_datavecS,fliplr(av_datavecS+std_datavecS)];              %#create y values for out and then back
 fill(X2,Y2,[153/255 204/255 255/255]);
 hold on
 plot(timevec,av_datavecS, 'b', 'LineWidth',2)
@@ -192,10 +195,12 @@ set(gca, 'FontSize', 15)
 
 %% plot superimposed ERPs
 
-figure;plot(timevec,av_datavecF, 'LineWidth',2)
-hold on
-plot(timevec,av_datavecU, 'LineWidth',2)
-plot(timevec,av_datavecS, 'LineWidth',2)
+figure;plot(timevec,av_datavecF, 'LineWidth',2, 'color', 'r'); hold on
+plot(timevec,av_datavecU, 'LineWidth',2, 'color', 'b')
+plot(timevec,av_datavecS, 'LineWidth',2, 'color', 'g')
+fillcurves(timevec,av_datavecF-std_datavecF,av_datavecF+std_datavecF, 'r', 0.2);
+fillcurves(timevec,av_datavecU-std_datavecU,av_datavecU+std_datavecU, 'b', 0.2);
+fillcurves(timevec,av_datavecS-std_datavecS,av_datavecS+std_datavecS, 'g', 0.2);
 xline(0, 'LineWidth',2)
 yline(0, 'LineWidth',2)
 xlabel('Latency ms')
@@ -214,6 +219,6 @@ figure; pop_erpimage(ALLEEG(3),1, [55],[[]],'eeg065',3,1,{ 'left_nonsym' 'right_
 figure; pop_erpimage(ALLEEG(4),1, [55],[[]],'eeg065',3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
 
 %% Save dataset
-EEG_famous = pop_saveset( EEG_famous,'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_famous_out.set','filepath',path2data);
-EEG_unfamiliar = pop_saveset( EEG_unfamiliar,'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_unfamiliar_out.set','filepath',path2data);
-EEG_scrambled = pop_saveset( EEG_scrambled,'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_scrambled_out.set','filepath',path2data);
+EEG_famous = pop_saveset( ALLEEG(2),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_famous_out.set','filepath',path2data);
+EEG_unfamiliar = pop_saveset( ALLEEG(3),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_unfamiliar_out.set','filepath',path2data);
+EEG_scrambled = pop_saveset( ALLEEG(4),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_scrambled_out.set','filepath',path2data);
