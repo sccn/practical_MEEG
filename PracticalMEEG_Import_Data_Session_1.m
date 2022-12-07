@@ -59,16 +59,11 @@ EEG = pop_select(EEG, 'channel', [307:381]);
 
 %% Step 3: Adding fiducials and rotating montage. Note:The channel location from this points were extracted from the sub-01_ses-meg_coordsystem.json
 % files (see below) and written down here. The reason is that File-IO does not import these coordinates.
-
-LPA = [-71, 0, 0]/10;
-RPA = [77.56,0,0]/10;
-Nz = [0, 106.36, 0]/10;
-
-EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'LPA'  [] [] LPA(1)   LPA(2) LPA(3)    [] [] [] 'FID' '' [] 0 [] []});
-EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'RPA'  [] [] RPA(1)   RPA(2) RPA(3)    [] [] [] 'FID' '' [] 0 [] []});
-EEG = pop_chanedit(EEG,'append',{length(EEG.chanlocs) 'Nz'   [] [] Nz(1)    Nz(2)  Nz(3)     [] [] [] 'FID' '' [] 0 [] []});
+n = length(EEG.chanlocs)+1;
+EEG=pop_chanedit(EEG, 'changefield',{n+0,'labels','LPA'},'changefield',{n+0,'X','-7.1'},'changefield',{n+0,'Y','0'},'changefield',{n+0,'Z','0'},...
+                      'changefield',{n+1,'labels','RPA'},'changefield',{n+1,'X','7.756'},'changefield',{n+1,'Y','0'},'changefield',{n+1,'Z','0'},...
+                      'changefield',{n+2,'labels','Nz'} ,'changefield',{n+2,'Y','10.636'},'changefield',{n+2,'X','0'},'changefield',{n+2,'Z','0'});
 EEG = pop_chanedit(EEG,'nosedir','+Y');
-
 
 % Changing Channel types and removing channel locations for channels 61-64 (Raw data types are incorrect)
 EEG = pop_chanedit(EEG,'changefield',{61  'type' 'HEOG'  'X'  []  'Y'  []  'Z'  []  'theta'  []  'radius'  []  'sph_theta'  []  'sph_phi'  []  'sph_radius'  []});

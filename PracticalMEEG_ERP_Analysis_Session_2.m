@@ -26,10 +26,7 @@ clear;
 clear globals;
 
 % Path to data belo. Using relative paths so no need to update.
-RootFolder = '/System/Volumes/Data/data/practicalMEEG'; 
-if ~exist(RootFolder)
-    RootFolder = fileparts(pwd); % Getting root folder
-end
+RootFolder = fileparts(pwd); % Getting root folder
 path2data = fullfile(RootFolder,'Data', 'sub-01') % Path to data 
 filename = 'wh_S01_run_01_preprocessing_data_session_1_out.set';
 
