@@ -17,7 +17,7 @@ The dataset above only contains one subject. For group level analysis, please us
 
 # Preprocessing
 
-For this presentation, we will first import the data with the [PracticalMEEG_Importa_Data.m](PracticalMEEG_Importa_Data.m) script. This script has 11 steps. 
+For this presentation, we will first import the data with the [PracticalMEEG_Import_Data_Session_1.m](PracticalMEEG_Import_Data_Session_1.m) script. This script has 11 steps. 
 
 * Step 1: Importing MEG data files with FileIO
 * Step 2: Adding fiducials and rotating montage
@@ -61,6 +61,21 @@ Then it plots the data using the following methods:
 * Plot conditions overlaid on each other
 * Plot ERPimages
 
+# Single and distributed sources
 
+For this presentation, we will the script [PracticalMEEG_Source_Reconstruction_Session_4.m](PracticalMEEG_Source_Reconstruction_Session_4.m). It performs the following steps.
 
+* Definition of head model and source model
+* Localization of ICA components
+* Plotting of ICA components overlaid on 3-D template MRI
 
+# Time-frequency decomposition
+
+For this presentation, we will the script [PracticalMEEG_Time_Frequency_Analysis_Session_3.m](PracticalMEEG_Time_Frequency_Analysis_Session_3.m). It performs the following steps.
+
+* Spectral analysis for each of the conditions
+* Time-frequency analysis for each of the conditions
+
+# Group-level analysis
+
+The script []()
