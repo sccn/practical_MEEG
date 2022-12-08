@@ -25,8 +25,8 @@ clear;                                      % clearing all is recommended to avo
 clear globals;
 
 % Comment one of the two lines below to process EEG or MEG data
-chantype = { 'megplanar' 'megmag'}; % process MEG (you may also select only one type of MEG channel)
-chantype = { 'megplanar' }; % process MEG (you may also select only one type of MEG channel)
+chantype = { 'megmag' }; % process MEG megmag channels
+chantype = { 'megplanar' }; % process MEG megplanar channels
 %chantype = { 'eeg' }; % process EEG
 
 % Paths below must be updated to the files on your enviroment.
@@ -97,13 +97,8 @@ EEG = pop_selectevent( EEG, 'type',17,'renametype','Scrambled','deleteevents','o
 EEG = pop_selectevent( EEG, 'type',18,'renametype','Scrambled','deleteevents','off');       % scrambled_second_early
 EEG = pop_selectevent( EEG, 'type',19,'renametype','Scrambled','deleteevents','off');       % scrambled_second_late
 
-% Step 9: Correcting event latencies (events have a shift of 34 ms as per the authors)
+% Step 10: Correcting event latencies (events have a shift of 34 ms as per the authors)
 EEG = pop_adjustevents(EEG,'addms',34);
-
-% Step 10: Replacing original imported channels
-% Note: This is a very unusual step that should not be done lightly. The reason here is because
-%       of the original channels were wrongly labeled at the time of the experiment
-EEG = pop_chanedit(EEG, 'rplurchanloc',1);
 
 % Step 11: Creating folder to save data if does not exist yet
 EEG = pop_saveset( EEG,'filename',['wh_S01'  '_run_01' '.set'],'filepath',path2data);
