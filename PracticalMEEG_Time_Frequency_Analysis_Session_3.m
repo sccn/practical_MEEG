@@ -47,6 +47,8 @@ if ~contains(EEG.chanlocs(1).type, 'meg')
     EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
 end
 
+%% The plot below are for each conditions
+%% To compute statistics, you must create a STUDY with a single subject
 %%-------------------------------------------------------------------------
 %% Plot spectrum using Welch’s method
 
