@@ -1,5 +1,5 @@
 % Practical MEEG 2022
-% Wakeman & Henson Data analysis: Dipiole localization
+% Wakeman & Henson Data analysis: Dipole localization
 
 % Authors: Ramon Martinez-Cancino, Brain Products, 2022
 %          Arnaud Delorme, SCCN, 2022
