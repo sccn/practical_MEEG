@@ -43,5 +43,24 @@ After importing the data, it is preprocessed using the [PracticalMEEG_Preprocess
 * automatically classify Independent Components using IC Label
 * Save dataset
 
-# Preprocessing
+# Single sensor analysis (ERP/ERF)
+
+For this presentation, we will use different vizualization techniques using the [PracticalMEEG_ERP_Analysis_Session_2.m](PracticalMEEG_ERP_Analysis_Session_2.m) script. The script first further process the data as follow.
+
+* Extract data epochs for the famous, scrambled, and unfamiliar face stimuli
+* Remove the baseline from -1000 ms to 0 pre-stimulus
+* Apply a threshold methods to remove spurious epochs
+* Resave the data
+
+Then it plots the data using the following methods:
+
+* Plot ERP butterfly plot and scalp distribution at different latencies
+* Plot ICA component contribution to the ERP
+* Remove ICA artifactual components and replot
+* Plot series of scalp topography at different latencies
+* Plot conditions overlaid on each other
+* Plot ERPimages
+
+
+
 
