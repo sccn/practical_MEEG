@@ -78,4 +78,9 @@ For this presentation, we will the script [PracticalMEEG_Time_Frequency_Analysis
 
 # Group-level analysis
 
-The script []()
+The script [PracticalMEEG_ERP_Analysis_GroupAnalysis_support.m](PracticalMEEG_ERP_Analysis_GroupAnalysis_support.m) perform group analysis on a group of subjects.
+
+* Removing components flagged for rejection using ICLabel
+* Plotting grand average ERPs
+
+
