@@ -34,18 +34,15 @@ filename = 'wh_S01_run_01.set';
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
 
 %% Loading data
-EEG = pop_loadset('filename', filename,'filepath',path2data)
-
-%% Remove unwanted channels (61-64)
-EEG = pop_select(EEG, 'nochannel', [61:64]) ;
+EEG = pop_loadset('filename', filename,'filepath',path2data);
 
 %% Re-Reference
 % Apply Common Average Reference
 EEG = pop_reref(EEG,[]);
 
 %% Resampling
-% Downsampling to 250 Hz
-EEG = pop_resample(EEG, 100);
+% Downsampling to 125 Hz for speed (for real analysis prefer 250 or 500 Hz)
+EEG = pop_resample(EEG, 125);
 
 %% Filter
 % Filter the data Highpass at 1 Hz Lowpass at 90Hz (to avoid line noise at 100Hz)
@@ -54,8 +51,13 @@ EEG = pop_eegfiltnew(EEG, 0, 40);  % Low pass below 40
 
 %% Automatic rejection of bad channels
 % Apply clean_artifacts() to reject bad channels
+if contains(EEG.chanlocs(1).type, 'meg')
+    minChanCorr = 0.4;
+else
+    minChanCorr = 0.9;
+end
 EEG = clean_artifacts(EEG, 'Highpass', 'off',...
-                           'ChannelCriterion', 0.9,...
+                           'ChannelCriterion', minChanCorr,...
                            'ChannelCriterionMaxBadTime', 0.4,...
                            'LineNoiseCriterion', 4,...
                            'BurstCriterion', 'off',...
@@ -71,15 +73,22 @@ EEG = clean_artifacts( EEG, 'Highpass', 'off',...
                             'BurstCriterion', 30,...
                             'WindowCriterion',0.3);
 
-
-% %% Save dataset
-% EEG = pop_saveset( EEG,'filename','wh_S01_run_01_preproc.set','filepath',path2save);
-
 %% run ICA
-EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
+% Use second line for speed (but you must install the Picard plugin)
+% The -1 for the number of channel is to account for matrix rank 
+% decrease due to average reference
+if exist('picard') % faster
+    EEG = pop_runica( EEG , 'picard', 'pca', EEG.nbchan-1);
+else
+    EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
+end
 
 %% automatically classify Independent Components using IC Label
-EEG  = iclabel(EEG);
+% EEG only, MEG would be possible if ICLabel is retrained with MEG
+% components instead of EEG components
+if ~contains(EEG.chanlocs(1).type, 'meg')
+    EEG  = iclabel(EEG);
+end
 
 %% Save dataset
 EEG = pop_saveset( EEG,'filename', 'wh_S01_run_01_preprocessing_data_session_1_out.set','filepath',path2data);

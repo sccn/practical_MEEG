@@ -37,54 +37,60 @@ filename = 'wh_S01_run_01_preprocessing_data_session_1_out.set';
 %% Loading data
 EEG = pop_loadset('filename', filename,'filepath',path2data);
 
-
 %% Extract event-locked trials using events
 EEG = pop_epoch( EEG, {'Famous', 'Unfamiliar', 'Scrambled'}, [-1  2], 'newname', 'WH_Epoched', 'epochinfo', 'yes');
 
-% Perform baseline correction
+%% Perform baseline correction
 EEG = pop_rmbase(EEG, [-1000 0]);
 
-%%  Clean data by rejecting epochs.
-EEG = pop_eegthresh(EEG, 1, 1:EEG.nbchan, -400, 400, EEG.xmin, EEG.xmax, 0, 1);
-
-[M,I] = max(EEG.etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
-Brain_comps = find(I == find(strcmp(EEG.etc.ic_classification.ICLabel.classes, 'Brain')));
-
-
-%% Subtract artefactual components from the EEG
-EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
-
-
-%% Estimate single equivalent current dipoles
+%% Source localization
 dipfitpath       = fileparts(which('pop_multifit'));
 electemplatepath = fullfile(dipfitpath,'standard_BEM/elec/standard_1005.elc');
+if ~contains(EEG.chanlocs(1).type, 'meg') % EEG only
+    %  Clean data by rejecting epochs.
+    EEG = pop_eegthresh(EEG, 1, 1:EEG.nbchan, -400, 400, EEG.xmin, EEG.xmax, 0, 1);
+    
+    % Subtract artefactual components from the EEG
+    [M,I] = max(EEG.etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
+    Brain_comps = find(I == find(strcmp(EEG.etc.ic_classification.ICLabel.classes, 'Brain')));
+    EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
+    
+    % Estimate single equivalent current dipoles
+    dipfitpath       = fileparts(which('pop_multifit'));
+    electemplatepath = fullfile(dipfitpath,'standard_BEM/elec/standard_1005.elc');
+    [~,coord_transform] = coregister(EEG.chaninfo.nodatchans, electemplatepath, 'warp', 'auto', 'manual', 'off');
+    
+    EEG = pop_dipfit_settings( EEG, 'hdmfile', fullfile(dipfitpath,'standard_BEM/standard_vol.mat'),...
+        'coordformat', 'MNI', 'chanfile', electemplatepath,'coord_transform', coord_transform,...
+        'mrifile', fullfile(dipfitpath,'standard_BEM/standard_mri.mat'));
+    
+else % MEG
+    %% Estimate single equivalent current dipoles
+    [~,coord_transform] = coregister(EEG.chaninfo.nodatchans, electemplatepath, 'warp', 'auto', 'manual', 'off');
+    
+    EEG = pop_dipfit_settings( EEG, 'hdmfile', fullfile(dipfitpath,'standard_BEM/standard_seg_mri_meg.mat'),...
+        'coordformat', 'MNI', 'chanfile', electemplatepath,'coord_transform', [],...
+        'mrifile', fullfile(dipfitpath,'standard_BEM/standard_mri.mat'));
+    Brain_comps = 1:size(EEG.icaweights);
+end
 
-[~,coord_transform] = coregister(EEG.chaninfo.nodatchans, electemplatepath, 'warp', 'auto', 'manual', 'off');
-
-EEG = pop_dipfit_settings( EEG, 'hdmfile', fullfile(dipfitpath,'standard_BEM/standard_vol.mat'),...
-    'coordformat', 'MNI', 'chanfile', electemplatepath,'coord_transform', coord_transform,...
-    'mrifile', fullfile(dipfitpath,'standard_BEM/standard_mri.mat'));
-
-EEG = pop_multifit(EEG, 1:EEG.nbchan,'threshold', 100, 'dipplot','off','plotopt',{'normlen' 'on'});
+% perform dipole fitting
+EEG = pop_multifit(EEG, 1:size(EEG.icaweights,1),'threshold', 100, 'dipplot','off','plotopt',{'normlen' 'on'});
 
 % Fitting dual dipole (for you may not be IC 4, check and asses)
-FusiformIC = 4;
+choosenIC = 4;
+EEG = pop_multifit(EEG, choosenIC, 'threshold', 100, 'dipoles', 2, 'plotopt', {'normlen' 'on'});
 
-EEG = pop_multifit(EEG, FusiformIC, 'threshold', 100, 'dipoles', 2, 'plotopt', {'normlen' 'on'});
-
-
-%% Plot of all dipoles
-pop_dipplot( EEG, [1:length(Brain_comps)] ,'mri',fullfile(dipfitpath,'/standard_BEM/standard_mri.mat'),'normlen','on');
-
+%% Plot of all brain component dipoles
+% There might be a coregistration issue with MEG as components tend to be frontal
+pop_dipplot( EEG, Brain_comps ,'mri',fullfile(dipfitpath,'/standard_BEM/standard_mri.mat'),'normlen','on', 'rvrange', 0.2);
 
 %% ERP Image Dipole on Fusiform Area
-figure; 
 % Changing dipolarity
-EEG.icaweights(FusiformIC,:) = -EEG.icaweights(FusiformIC,:);
-EEG.icawinv(:,FusiformIC) = -EEG.icawinv(:,FusiformIC);
-EEG.icaact(FusiformIC,:) = -EEG.icaact(FusiformIC,:);
-
-pop_erpimage(EEG,0, FusiformIC,[[]],'Comp. 4',10,1,{},[],'' ,'yerplabel','','erp','on','cbar','on','topo', { mean(EEG.icawinv(:,[4]),2) EEG.chanlocs EEG.chaninfo } );
+EEG.icaweights(choosenIC,:) = -EEG.icaweights(choosenIC,:);
+EEG.icawinv(:,choosenIC) = -EEG.icawinv(:,choosenIC);
+EEG.icaact(choosenIC,:) = -EEG.icaact(choosenIC,:);
+pop_erpimage(EEG,0, choosenIC,[[]],['Comp. ' int2str(choosenIC) ],10,1,{},[],'' ,'yerplabel','','erp','on','cbar','on','topo', { mean(EEG.icawinv(:,[choosenIC]),2) EEG.chanlocs EEG.chaninfo } );
 
 %% Saving data
 EEG = pop_saveset( EEG,'filename', 'wh_S01_run_01_Source_Reconstruction_Session_4_out.set','filepath', path2data);

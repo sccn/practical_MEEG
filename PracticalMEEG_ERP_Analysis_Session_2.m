@@ -27,7 +27,7 @@ clear globals;
 
 % Path to data belo. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
-path2data = fullfile(RootFolder,'Data', 'sub-01') % Path to data 
+path2data = fullfile(RootFolder,'Data', 'sub-01'); % Path to data 
 filename = 'wh_S01_run_01_preprocessing_data_session_1_out.set';
 
 % Start EEGLAB
@@ -56,7 +56,15 @@ ALLEEG(4) = pop_rmbase(ALLEEG(4), [-1000 0]);
 [ALLEEG(2), rejindx] = pop_eegthresh(ALLEEG(2), 1, 1:ALLEEG(2).nbchan, -400, 400, ALLEEG(2).xmin, ALLEEG(2).xmax, 0, 1);
 [ALLEEG(3), rejindx] = pop_eegthresh(ALLEEG(3), 1, 1:ALLEEG(3).nbchan, -400, 400, ALLEEG(3).xmin, ALLEEG(3).xmax, 0, 1);
 [ALLEEG(4), rejindx] = pop_eegthresh(ALLEEG(4), 1, 1:ALLEEG(4).nbchan, -400, 400, ALLEEG(4).xmin, ALLEEG(4).xmax, 0, 1);
-return
+
+%% Save dataset
+EEG_famous = pop_saveset( ALLEEG(2),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_famous_out.set','filepath',path2data);
+EEG_unfamiliar = pop_saveset( ALLEEG(3),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_unfamiliar_out.set','filepath',path2data);
+EEG_scrambled = pop_saveset( ALLEEG(4),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_scrambled_out.set','filepath',path2data);
+
+%% ----------------------
+%% BELOW IS PLOTTING ONLY
+%% ----------------------
 
 %% plot ERP scalp distribution 
 figure; pop_timtopo(ALLEEG(2), [-100  600], [NaN], 'ERP data and scalp maps of Famous Epoched');
@@ -125,23 +133,16 @@ figure; pop_plottopo(ALLEEG(4), [1:64] , 'Scrambled', 0, 'ydir',1);
 
 % find channel index of eeg065
 Chanind = find(strcmp({ALLEEG(2).chanlocs.labels},'eeg065'));
+if isempty(Chanind)
+    Chanind = 1;
+end
 
 % create timevector for plotting 
 [val, indL] = min(abs(ALLEEG(2).times+200)); %get timepoints for -200 and 800 Latencies
 [val, indU] = min(abs(ALLEEG(2).times-800));
 timevec = ALLEEG(2).times(indL:indU); % create timevector
 
-% clear aa
-% clear bb
-% [bb,aa] = butter (4, [10] ./ (ALLEEG(2).srate / 2), 'low' );
-% freqz(bb,aa,ALLEEG(2).srate, 100)
-%Famous_filt = filter(bb, aa, mean(ALLEEG(2).data(Chanind,:,:),3));
-
-% Famous_filt = filter(bb, aa, ALLEEG(2).data(Chanind,:,:), [], 2);
-% Unfamiliar_filt = filter(bb, aa, ALLEEG(3).data(Chanind,:,:), [], 2);
-% Scrambled_filt = filter(bb, aa, ALLEEG(4).data(Chanind,:,:), [], 2);
-
-% create datavectors for plotting
+% create datavectors for plotting each condition
 av_datavecF = mean(ALLEEG(2).data(Chanind,indL:indU,:),3); % average
 std_datavecF = std(ALLEEG(2).data(Chanind,indL:indU,:),1,3); % standard deviation
 
@@ -155,7 +156,7 @@ xline(0, 'LineWidth',2)
 yline(0, 'LineWidth',2)
 xlabel('Latency ms')
 ylabel('mu Volt')
-title('famous')
+title([ 'famous faces channel ' EEG.chanlocs(Chanind).labels ]);
 set(gca, 'FontSize', 15)
 
 av_datavecU = mean(ALLEEG(3).data(Chanind,indL:indU,:),3); % average
@@ -171,7 +172,7 @@ xline(0, 'LineWidth',2)
 yline(0, 'LineWidth',2)
 xlabel('Latency ms')
 ylabel('mu Volt')
-title('unfamiliar')
+title([ 'unfamiliar faces channel ' EEG.chanlocs(Chanind).labels ]);
 set(gca, 'FontSize', 15)
 
 av_datavecS = mean(ALLEEG(4).data(Chanind,indL:indU,:),3); % average
@@ -187,7 +188,7 @@ xline(0, 'LineWidth',2)
 yline(0, 'LineWidth',2)
 xlabel('Latency ms')
 ylabel('mu Volt')
-title('scrambled')
+title([ 'scrambled faces channel ' EEG.chanlocs(Chanind).labels ]);
 set(gca, 'FontSize', 15)
 
 %% plot superimposed ERPs
@@ -204,18 +205,14 @@ xlabel('Latency ms')
 ylabel('mu Volt')
 legend('famous', 'unfamiliar', 'scrambled')
 set(gca, 'FontSize', 15)
+title([ 'face types for channel ' EEG.chanlocs(Chanind).labels ]);
 
 %% ERPimage
-figure; pop_erpimage(ALLEEG(2),1, [55],[[]],'eeg065',3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
-figure; pop_erpimage(ALLEEG(3),1, [55],[[]],'eeg065',3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
-figure; pop_erpimage(ALLEEG(4),1, [55],[[]],'eeg065',3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
+figure; pop_erpimage(ALLEEG(2),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );
+figure; pop_erpimage(ALLEEG(3),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );
+figure; pop_erpimage(ALLEEG(4),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );
 
-% sort by event latency
-figure; pop_erpimage(ALLEEG(2),1, [55],[[]],'eeg065',3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
-figure; pop_erpimage(ALLEEG(3),1, [55],[[]],'eeg065',3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
-figure; pop_erpimage(ALLEEG(4),1, [55],[[]],'eeg065',3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [55] EEG.chanlocs EEG.chaninfo } );
-
-%% Save dataset
-EEG_famous = pop_saveset( ALLEEG(2),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_famous_out.set','filepath',path2data);
-EEG_unfamiliar = pop_saveset( ALLEEG(3),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_unfamiliar_out.set','filepath',path2data);
-EEG_scrambled = pop_saveset( ALLEEG(4),'filename', 'wh_S01_run_01_ERP_Analysis_Session_2_scrambled_out.set','filepath',path2data);
+% sort by event latency (when there are enough of left_nonsym and right_sym events
+% figure; pop_erpimage(ALLEEG(2),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );
+% figure; pop_erpimage(ALLEEG(3),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );
+% figure; pop_erpimage(ALLEEG(4),1, [Chanind],[[]],EEG.chanlocs(Chanind).labels,3,1,{ 'left_nonsym' 'right_sym'},[],'latency' ,'yerplabel','\muV','erp','on','limits',[-100 1200 NaN NaN NaN NaN NaN NaN] ,'cbar','on','topo', { [Chanind] EEG.chanlocs EEG.chaninfo } );

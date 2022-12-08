@@ -38,15 +38,14 @@ filename_epoched_scrambled  = 'wh_S01_run_01_ERP_Analysis_Session_2_scrambled_ou
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
 
 %% Loading data
-EEG = pop_loadset('filename', filename,'filepath',path2data)
+EEG = pop_loadset('filename', filename,'filepath',path2data);
 
-
-%% Identifying Artifacts Using ICLabel
-[M,I] = max(EEG.etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
-Brain_comps = find(I == find(strcmp(EEG.etc.ic_classification.ICLabel.classes, 'Brain')));
-
-%% Subtract artefactual components from the EEG
-EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
+%% Identifying Artifacts Using ICLabel and removing them (EEG only)
+if ~contains(EEG.chanlocs(1).type, 'meg')
+    [M,I] = max(EEG.etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
+    Brain_comps = find(I == find(strcmp(EEG.etc.ic_classification.ICLabel.classes, 'Brain')));
+    EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
+end
 
 %%-------------------------------------------------------------------------
 %% Plot spectrum using Welch’s method
@@ -59,7 +58,6 @@ pop_spectopo(EEG, 1, [0 EEG.xmax*1000], 'EEG' , 'freq', [6 10 22], 'freqrange',[
 % winsize = 200; overlap = 0
 figure('name', 'winsize = 200; overlap = 0'); 
 pop_spectopo(EEG, 1, [0 EEG.xmax*1000], 'EEG' , 'freq', [6 10 22], 'freqrange',[2 40],'electrodes','off', 'winsize', 200);
-
 
 % winsize = 300; overlap = 0
 figure('name', 'winsize = 300; overlap = 0');

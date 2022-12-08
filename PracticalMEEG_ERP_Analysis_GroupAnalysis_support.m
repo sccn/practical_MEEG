@@ -27,6 +27,12 @@
 % Clearing all is recommended to avoid variable not being erased between calls 
 clear;                                      
 clear globals;
+eeglab;
+
+% We have added the participants.tsv file so we can import as BIDS
+path2data = fullfile(fileparts(pwd), 'Data', 'ds000117-pruned', 'derivatives', 'meg_derivatives');
+path2save = fullfile(fileparts(pwd), 'Data', 'ds000117-pruned', 'derivatives', 'eeglab');
+[STUDY, ALLEEG] = pop_importbids(path2data, 'bidsevent', 'off', 'bidschanloc', 'off', 'outputdir', path2save, 'subjects', [1:6], 'runs', 1)
 
 % Paths to data. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
