@@ -25,15 +25,12 @@
 clear;                                      
 clear globals;
 
-% Path to data belo. Using relative paths so no need to update.
+% Path to data below. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
 path2data = fullfile(RootFolder,'Data', 'sub-01'); % Path to data 
 filename = 'wh_S01_run_01_preprocessing_data_session_1_out.set';
 
 % Start EEGLAB
-[ALLEEG, EEG, CURRENTSET] = eeglab; 
-
-% restart EEGLAB
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
 
 % Loading data
