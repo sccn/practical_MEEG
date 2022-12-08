@@ -33,5 +33,15 @@ For this presentation, we will first import the data with the [PracticalMEEG_Imp
 
 After importing the data, it is preprocessed using the [PracticalMEEG_Preprocess_Data_Session_1.m](PracticalMEEG_Preprocess_Data_Session_1.m) script. This script itself has several steps.
 
+* Re-Reference the data
+* Resampling the data (for speed)
+* Filter the data
+* Automatic rejection of bad channels
+* Re-Reference again
+* Repair bursts and reject bad portions of data
+* run ICA to detect brain and artifactual components
+* automatically classify Independent Components using IC Label
+* Save dataset
 
+# Preprocessing
 
