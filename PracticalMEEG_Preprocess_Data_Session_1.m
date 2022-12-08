@@ -36,13 +36,16 @@ filename = 'wh_S01_run_01.set';
 %% Loading data
 EEG = pop_loadset('filename', filename,'filepath',path2data);
 
+%% Remove unwanted channels (61-64)
+EEG = pop_select(EEG, 'nochannel', [61:64]) ;
+
 %% Re-Reference
 % Apply Common Average Reference
 EEG = pop_reref(EEG,[]);
 
 %% Resampling
-% Downsampling to 125 Hz for speed (for real analysis prefer 250 or 500 Hz)
-EEG = pop_resample(EEG, 125);
+% Downsampling to 100 Hz for speed (for real analysis prefer 250 or 500 Hz)
+EEG = pop_resample(EEG, 100);
 
 %% Filter
 % Filter the data Highpass at 1 Hz Lowpass at 90Hz (to avoid line noise at 100Hz)
