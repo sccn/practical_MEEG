@@ -84,8 +84,8 @@ for isubj = 2:6
         'WindowCriterion',0.3);
         
     %% run ICA
-   % EEG = pop_runica(EEG, 'icatype', 'picard', 'maxiter',500,'mode','standard','pca', EEG.nbchan-1);
-    EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
+    EEG = pop_runica(EEG, 'icatype', 'picard', 'maxiter',10,'mode','standard','pca', EEG.nbchan-1);
+    % EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
     %% automatically classify Independent Components using IC Label
     EEG  = iclabel(EEG);
     
