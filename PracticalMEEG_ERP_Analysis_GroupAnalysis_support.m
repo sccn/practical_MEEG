@@ -30,17 +30,23 @@ clear globals;
 
 % Paths to data. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
-path2data = fullfile(RootFolder,'Data', 'ds002718_5_Subjects') % Path to  the original unzipped data files
+path2data = fullfile(RootFolder,'Data', 'ds002718') % Path to  the original unzipped data files 18 subjects
 
 % Start EEGLAB
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
 
-
-for isubj = 2:6
+%%
+for isubj = 2:19
     
-    current_path2data = fullfile(path2data,['sub-00', num2str(isubj)],'eeg');
-    current_filename = ['sub-00' num2str(isubj) '_task-FaceRecognition_eeg.set'];
-    current_savefilename = ['sub-00' num2str(isubj) '_task-FaceRecognition_eeg_proc.set'];
+    if isubj < 10
+        subj = 'sub-00';
+    else
+        subj = 'sub-0';
+    end
+    
+    current_path2data = fullfile(path2data,[subj, num2str(isubj)],'eeg');
+    current_filename = [subj num2str(isubj) '_task-FaceRecognition_eeg.set'];
+    current_savefilename = [subj num2str(isubj) '_task-FaceRecognition_eeg_proc.set'];
     
     %% Load data previously imported
     EEG = pop_loadset('filename', current_filename , 'filepath', current_path2data);
@@ -84,8 +90,8 @@ for isubj = 2:6
         'WindowCriterion',0.3);
         
     %% run ICA
-   % EEG = pop_runica(EEG, 'icatype', 'picard', 'maxiter',500,'mode','standard','pca', EEG.nbchan-1);
-    EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
+   EEG = pop_runica(EEG, 'icatype', 'picard', 'maxiter',500,'mode','standard','pca', EEG.nbchan-1);
+%     EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
     %% automatically classify Independent Components using IC Label
     EEG  = iclabel(EEG);
     
