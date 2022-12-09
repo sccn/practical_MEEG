@@ -28,7 +28,7 @@ clear globals;
 
 % Paths to data. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
-path2data = fullfile(RootFolder,'Data', 'ds002718_5_Subjects') % Path to precomputed files from ds002718
+path2data = fullfile(RootFolder,'Data', 'ds002718') % Path to precomputed files from ds002718
 
 % Start EEGLAB
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
@@ -48,13 +48,20 @@ studyfolderpath = path2data;      % Path to save the STUDY. Here the same as whe
 % 0.15 must be selected for further proccesing.
 
 commands = {}; counter = 1;
-for i = 2:6
+for i = 2:19
     
-    filename = fullfile(path2data,['sub-00'  num2str(i)], 'eeg', ['sub-00' num2str(i) '_task-FaceRecognition_eeg_proc.set']) ;
+    if i < 10
+        subj = 'sub-00';
+    else
+        subj = 'sub-0';
+    end
+    
+    
+    filename = fullfile(path2data,[subj  num2str(i)], 'eeg', [subj num2str(i) '_task-FaceRecognition_eeg_proc.set']) ;
 
     commands{counter}   = {'index' counter...
                             'load' filename ...
-                            'subject' ['subj-00' num2str(i)]...
+                            'subject' [subj num2str(i)]...
                             'group' '1'...
                             'session' 1 ...
                             'inbrain' 'on'...
@@ -92,9 +99,7 @@ STUDY       = std_makedesign(STUDY, ALLEEG, 1, 'name','STUDY.design 1',...
                                                'values1',{{'famous_new' 'famous_second_early' 'famous_second_late'}...
                                                           {'scrambled_new' 'scrambled_second_early' 'scrambled_second_late'}...
                                                           {'unfamiliar_new' 'unfamiliar_second_early' 'unfamiliar_second_late'}},...
-                                               'vartype1','categorical',...
-                                               'subjselect',{ 'subj-002' 'subj-003' 'subj-004' 'subj-005' 'subj-006'}...
-                                                );
+                                               'vartype1','categorical');
                                             
 [STUDY EEG] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave'); % Saving the STUDY
 
