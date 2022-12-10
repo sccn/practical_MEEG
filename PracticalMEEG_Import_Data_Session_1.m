@@ -25,9 +25,9 @@ clear;                                      % clearing all is recommended to avo
 clear globals;
 
 % Comment one of the two lines below to process EEG or MEG data
-chantype = { 'megmag' }; % process MEG megmag channels
-chantype = { 'megplanar' }; % process MEG megplanar channels
-%chantype = { 'eeg' }; % process EEG
+%chantype = { 'megmag' }; % process MEG megmag channels
+%chantype = { 'megplanar' }; % process MEG megplanar channels
+chantype = { 'eeg' }; % process EEG
 
 % Paths below must be updated to the files on your enviroment.
 RootFolder = fileparts(pwd); % Getting root folder
