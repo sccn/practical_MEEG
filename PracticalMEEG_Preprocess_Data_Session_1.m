@@ -36,9 +36,6 @@ filename = 'wh_S01_run_01.set';
 %% Loading data
 EEG = pop_loadset('filename', filename,'filepath',path2data);
 
-%% Remove unwanted channels (61-64)
-EEG = pop_select(EEG, 'nochannel', [61:64]) ;
-
 %% Re-Reference
 % Apply Common Average Reference
 EEG = pop_reref(EEG,[]);
@@ -81,7 +78,7 @@ EEG = clean_artifacts( EEG, 'Highpass', 'off',...
 % The -1 for the number of channel is to account for matrix rank 
 % decrease due to average reference
 if exist('picard') % faster
-    EEG = pop_runica( EEG , 'picard', 'pca', EEG.nbchan-1);
+    EEG = pop_runica( EEG , 'picard', 'maxiter', 500, 'pca', EEG.nbchan-1);
 else
     EEG = pop_runica( EEG , 'runica', 'extended',1, 'pca', EEG.nbchan-1);
 end
