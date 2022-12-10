@@ -103,15 +103,22 @@ STUDY       = std_makedesign(STUDY, ALLEEG, 1, 'name','STUDY.design 1',...
                                             
 [STUDY EEG] = pop_savestudy( STUDY, ALLEEG, 'savemode','resave'); % Saving the STUDY
 
+%% Plot grand average at 170 ms
+[STUDY, ALLEEG] = std_precomp(STUDY, ALLEEG, {},'savetrials','on','interp','on','recompute','on','erp','on');
+STUDY = pop_erpparams(STUDY, 'plotconditions','together');
+chanList = eeg_mergelocs(ALLEEG.chanlocs);
+STUDY = std_erpplot(STUDY,ALLEEG,'channels', {chanList.labels}, 'design', 1);
+STUDY = pop_erpparams(STUDY, 'topotime',170 );
+STUDY = std_erpplot(STUDY,ALLEEG,'channels',{chanList.labels}, 'design', 1);
 
-%% Generating measures 
+%% Generating measures for clusters
 [STUDY ALLEEG]  = std_precomp(STUDY, ALLEEG, 'components','savetrials','on','recompute','on','erp','on','scalp','on','erpparams',{'rmbase' [-100 0]});
 [STUDY ALLEEG]  = std_preclust(STUDY, ALLEEG, 1,{'erp' 'npca' 10 'weight' 1 'timewindow' [100 800]  'erpfilter' '25'},...
-                                                {'scalp' 'npca' 10 'weight' 1 'abso' 1},...
-                                                {'dipoles' 'weight' 10});
+    {'scalp' 'npca' 10 'weight' 1 'abso' 1},...
+    {'dipoles' 'weight' 10});
 
-%% Clustering                                          
-nclusters = 15;                                            
+%% Clustering
+nclusters = 15;
 [STUDY]         = pop_clust(STUDY, ALLEEG, 'algorithm','kmeans','clus_num',  nclusters , 'outliers',  2.8 );
 [STUDY EEG]     = pop_savestudy( STUDY, ALLEEG, 'savemode','resave');
 
