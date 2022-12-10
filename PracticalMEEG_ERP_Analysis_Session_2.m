@@ -87,13 +87,15 @@ pop_envtopo(([ALLEEG(2)  ALLEEG(3)]), [-100  600] ,'limcontrib',[0 400],'compspl
 pop_envtopo(([ALLEEG(3)  ALLEEG(4)]), [-100  600] ,'limcontrib',[0 400],'compsplot',[7],'subcomps',[1 6],'title', 'Unfamiliar - Scrambled','electrodes','off');
 
 %% Identify Brain ICs using IC Label classification results
-[M,I] = max(ALLEEG(1).etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
-Brain_comps = find(I == find(strcmp(ALLEEG(1).etc.ic_classification.ICLabel.classes, 'Brain')));
-
-%% Subtract artefactual components from the EEG
-ALLEEG(2) = pop_subcomp( ALLEEG(2), Brain_comps, 0, 1);
-ALLEEG(3) = pop_subcomp( ALLEEG(3), Brain_comps, 0, 1);
-ALLEEG(4) = pop_subcomp( ALLEEG(4), Brain_comps, 0, 1);
+if isfield(ALLEEG(1).etc, 'ic_classification')
+    [M,I] = max(ALLEEG(1).etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
+    Brain_comps = find(I == find(strcmp(ALLEEG(1).etc.ic_classification.ICLabel.classes, 'Brain')));
+    
+    %% Subtract artefactual components from the EEG
+    ALLEEG(2) = pop_subcomp( ALLEEG(2), Brain_comps, 0, 1);
+    ALLEEG(3) = pop_subcomp( ALLEEG(3), Brain_comps, 0, 1);
+    ALLEEG(4) = pop_subcomp( ALLEEG(4), Brain_comps, 0, 1);
+end
 
 %% Rename datasets
 ALLEEG(2) = pop_editset(ALLEEG(2), 'setname', 'Famous', 'run', []);
@@ -121,9 +123,9 @@ pop_topoplot(ALLEEG(3), 1, [25:25:300] ,'Unfamiliar',[3 4] ,0,'electrodes','on')
 pop_topoplot(ALLEEG(4), 1, [25:25:300] ,'Scrambled',[3 4] ,0,'electrodes','on');
 
 %% Plot channel ERPs in topographic array
-figure; pop_plottopo(ALLEEG(2), [1:64] , 'Famous', 0, 'ydir',1);
-figure; pop_plottopo(ALLEEG(3), [1:64] , 'Unfamiliar', 0, 'ydir',1);
-figure; pop_plottopo(ALLEEG(4), [1:64] , 'Scrambled', 0, 'ydir',1);
+figure; pop_plottopo(ALLEEG(2), [1:EEG.nbchan] , 'Famous', 0, 'ydir',1);
+figure; pop_plottopo(ALLEEG(3), [1:EEG.nbchan] , 'Unfamiliar', 0, 'ydir',1);
+figure; pop_plottopo(ALLEEG(4), [1:EEG.nbchan] , 'Scrambled', 0, 'ydir',1);
 
 
 %% plot average ERPs for each condition with standard deviation
