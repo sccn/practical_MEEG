@@ -54,28 +54,13 @@ if ~contains(EEG.chanlocs(1).type, 'meg') % EEG only
     [M,I] = max(EEG.etc.ic_classification.ICLabel.classifications,[],2);                       % Use max prob for classification
     Brain_comps = find(I == find(strcmp(EEG.etc.ic_classification.ICLabel.classes, 'Brain')));
     EEG = pop_subcomp( EEG, Brain_comps, 0, 1);
-    
-    % Estimate single equivalent current dipoles
-    dipfitpath       = fileparts(which('pop_multifit'));
-    electemplatepath = fullfile(dipfitpath,'standard_BEM/elec/standard_1005.elc');
-    [~,coord_transform] = coregister(EEG.chaninfo.nodatchans, electemplatepath, 'warp', 'auto', 'manual', 'off');
-    
-    EEG = pop_dipfit_settings( EEG, 'hdmfile', fullfile(dipfitpath,'standard_BEM/standard_vol.mat'),...
-        'coordformat', 'MNI', 'chanfile', electemplatepath,'coord_transform', coord_transform,...
-        'mrifile', fullfile(dipfitpath,'standard_BEM/standard_mri.mat'));
-    
 else % MEG
-    %% Estimate single equivalent current dipoles
-    [~,coord_transform] = coregister(EEG.chaninfo.nodatchans, electemplatepath, 'warp', 'auto', 'manual', 'off');
-    
-    EEG = pop_dipfit_settings( EEG, 'hdmfile', fullfile(dipfitpath,'standard_BEM/standard_seg_mri_meg.mat'),...
-        'coordformat', 'MNI', 'chanfile', electemplatepath,'coord_transform', [],...
-        'mrifile', fullfile(dipfitpath,'standard_BEM/standard_mri.mat'));
     Brain_comps = 1:size(EEG.icaweights);
 end
 
 % perform dipole fitting
-EEG = pop_multifit(EEG, 1:size(EEG.icaweights,1),'threshold', 100, 'dipplot','off','plotopt',{'normlen' 'on'});
+EEG = pop_dipfit_settings( EEG, 'model', 'standardBEM', 'coord_transform', 'warpfiducials');
+EEG = pop_multifit(EEG, 1:10,'threshold', 100, 'dipplot','off','plotopt',{'normlen' 'on'}); % only 10 fine fit for speed
 
 % Fitting dual dipole (for you may not be IC 4, check and asses)
 choosenIC = 4;
