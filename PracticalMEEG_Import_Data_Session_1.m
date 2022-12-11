@@ -61,16 +61,15 @@ EEG = pop_chanedit(EEG,'changefield',{368  'type' 'VEOG'  'X'  []  'Y'  []  'Z' 
 EEG = pop_chanedit(EEG,'changefield',{369  'type' 'EKG'   'X'  []  'Y'  []  'Z'  []  'theta'  []  'radius'  []  'sph_theta'  []  'sph_phi'  []  'sph_radius'  []});
 EEG = pop_chanedit(EEG,'changefield',{370  'type' 'EKG'   'X'  []  'Y'  []  'Z'  []  'theta'  []  'radius'  []  'sph_theta'  []  'sph_phi'  []  'sph_radius'  []});
 
-% Step 3: Recomputing head center (for display only) Optional
-% EEG = pop_chanedit(EEG, 'eval','chans = pop_chancenter( chans, [],[])');
-
-% Step 4: Re-import events from STI101 channel (the original ones are incorect)
+% Step 3: Re-import events from STI101 channel (the original ones are incorect)
 edgelenval = 1;
 EEG = pop_chanevent(EEG, 381,'edge','leading','edgelen',edgelenval,'delevent','on','delchan','off','oper','double(bitand(int32(X),31))'); % first 5 bits
 
-% Step 5: Selecting EEG or MEG data 
-%EEG = pop_select(EEG, 'channel', ListOfChannels) ;
+% Step 4: Selecting EEG or MEG data 
 EEG = pop_select(EEG, 'chantype', chantype);
+
+% Step 5: Recomputing head center (for display only) Optional
+EEG = pop_chanedit(EEG, 'eval','chans = pop_chancenter( chans, [],[])');
 figure; topoplot([],EEG.chanlocs, 'style', 'blank',  'electrodes', 'labelpoint', 'chaninfo', EEG.chaninfo);
 
 % Step 6: Cleaning artefactual events (keep only valid event codes) (
