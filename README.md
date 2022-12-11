@@ -15,6 +15,13 @@ We will use data from the multimodal face recognition dat. BIDS dataset containi
 
 The dataset above only contains one subject. For group level analysis, please use the following BIDS repository [here](https://openneuro.org/datasets/ds002718/versions/1.0.5).
 
+The scripts using the single subject data assume the datafiles are located in the folder (Data/sub-01) located in the parent folder of this repository in your file system. See below the code used in the scripts to locate the file:
+
+	RootFolder = fileparts(pwd); % Getting root folder
+	path2data = fullfile(RootFolder,'Data', 'sub-01'); % Path to data 
+
+For Session 5, copy the data folder (please rename to 'ds002718') containing the ds002718 in the same 'Data' folder. These files will be distributed later on.
+
 # Preprocessing
 
 For this presentation, we will first import the data with the [PracticalMEEG_Import_Data_Session_1.m](PracticalMEEG_Import_Data_Session_1.m) script. This script has 11 steps. 
