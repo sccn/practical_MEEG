@@ -131,7 +131,7 @@ figure; pop_plottopo(ALLEEG(4), [1:EEG.nbchan] , 'Scrambled', 0, 'ydir',1);
 %% plot average ERPs for each condition with standard deviation
 
 % find channel index of eeg065
-Chanind = find(strcmp({ALLEEG(2).chanlocs.labels},'eeg065'));
+Chanind = find(strcmp({ALLEEG(2).chanlocs.labels},'EEG065'));
 if isempty(Chanind)
     Chanind = 1;
 end
