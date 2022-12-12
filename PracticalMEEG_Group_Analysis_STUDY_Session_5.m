@@ -1,5 +1,10 @@
 % Practical MEEG 2022
 % Wakeman & Henson Data analysis: Group Analysis
+%
+% Note on data: In this script, we use the OpenNeuro dataset ID: ds002718. 
+% This dataset is the EEGLAB imported version of the Wakeman-Henson dataset ID: ds000117.
+% Previous to being used in this demo the data was already preprocessed in the script
+% PracticalMEEG_ERP_Analysis_GroupAnalysis_support.m
 
 % Authors: Ramon Martinez-Cancino, Brain Products, 2022
 %          Arnaud Delorme, SCCN, 2022
@@ -56,9 +61,8 @@ for i = 2:19
         subj = 'sub-0';
     end
     
-    
     filename = fullfile(path2data,[subj  num2str(i)], 'eeg', [subj num2str(i) '_task-FaceRecognition_eeg_proc.set']) ;
-
+    
     commands{counter}   = {'index' counter...
                             'load' filename ...
                             'subject' [subj num2str(i)]...
