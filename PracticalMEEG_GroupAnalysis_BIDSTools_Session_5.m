@@ -1,5 +1,6 @@
 % Practical MEEG 2022
-% Wakeman & Henson Data analysis: Preprocessing for group analysis
+% Wakeman & Henson Data analysis: Preprocessing for group analysis using
+% EEGLAB BIDS Tools
 
 % Authors: Arnaud Delorme, SCCN, 2022
 %          Ramon Martinez-Cancino, Brain Products, 2022
