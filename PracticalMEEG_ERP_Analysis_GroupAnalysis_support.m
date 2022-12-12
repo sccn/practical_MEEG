@@ -1,5 +1,9 @@
 % Practical MEEG 2022
 % Wakeman & Henson Data analysis: Preprocessing for group analysis
+%
+% Note on data: In this script we use the OpenNeuro dataset ID: ds002718. This
+% dataset is the EEGLAB imported version of the Wakeman-Henson dataset ID:
+% ds000117. Copy this folder in the parent forlder containing this script.
 
 % Authors: Ramon Martinez-Cancino, Brain Products, 2022
 %          Arnaud Delorme, SCCN, 2022
