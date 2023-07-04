@@ -33,7 +33,7 @@ clear globals;
 
 % Paths to data. Using relative paths so no need to update.
 RootFolder = fileparts(pwd); % Getting root folder
-path2data = fullfile(RootFolder,'Data', 'ds002718') % Path to precomputed files from ds002718
+path2data = fullfile(RootFolder,'Data', 'ds002718_5_Subjects') % Path to precomputed files from ds002718
 
 % Start EEGLAB
 [ALLEEG, EEG, CURRENTSET] = eeglab; 
@@ -138,7 +138,7 @@ STUDY = std_topoplot(STUDY,ALLEEG,'clusters',[2:nclusters+2], 'design', 1);
 STUDY = std_dipplot(STUDY,ALLEEG,'clusters',[2:nclusters+2], 'design', 1);
 
 %% One cluster figure
-ClusterOfInterest = 15;
+ClusterOfInterest = 14;
 STUDY = pop_erpparams(STUDY, 'plotconditions','together');
 STUDY = std_erpplot(STUDY,ALLEEG,'clusters',ClusterOfInterest, 'design', 1);
 STUDY = std_dipplot(STUDY,ALLEEG,'clusters',ClusterOfInterest, 'design', 1);

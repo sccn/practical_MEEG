@@ -49,10 +49,9 @@ EEG.subject = 'sub-01';
 % Step 2: Adding fiducials and rotating montage. Note:The channel location from this points were extracted from the sub-01_ses-meg_coordsystem.json
 % files (see below) and written down here. The reason is that File-IO does not import these coordinates.
 n = length(EEG.chanlocs)+1;
-EEG=pop_chanedit(EEG, 'changefield',{n+0,'labels','LPA'},'changefield',{n+0,'X','-7.1'},  'changefield',{n+0,'Y','0'},'changefield',{n+0,'Z','0'},...
-                      'changefield',{n+1,'labels','RPA'},'changefield',{n+1,'X','7.756'}, 'changefield',{n+1,'Y','0'},'changefield',{n+1,'Z','0'},...
-                      'changefield',{n+2,'labels','Nz'} ,'changefield',{n+2,'Y','10.636'},'changefield',{n+2,'X','0'},'changefield',{n+2,'Z','0'});
-EEG = pop_chanedit(EEG,'nosedir','+Y');
+EEG=pop_chanedit(EEG, 'changefield',{n+0,'labels','LPA'},'changefield',{n+0,'X','0'},  'changefield',{n+0,'Y','7.1'},'changefield',{n+0,'Z','0'},...
+                      'changefield',{n+1,'labels','RPA'},'changefield',{n+1,'X','0'}, 'changefield',{n+1,'Y','-7.756'},'changefield',{n+1,'Z','0'},...
+                      'changefield',{n+2,'labels','Nz'} ,'changefield',{n+2,'Y','0'},'changefield',{n+2,'X','10.636'},'changefield',{n+2,'Z','0'});
 EEG = eeg_checkset(EEG);
 
 % Changing Channel types and removing channel locations for channels 61-64 (Raw data types are incorrect)
@@ -67,6 +66,8 @@ EEG = pop_chanevent(EEG, 381,'edge','leading','edgelen',edgelenval,'delevent','o
 
 % Step 4: Selecting EEG or MEG data 
 EEG = pop_select(EEG, 'chantype', chantype);
+EEG.chaninfo = rmfield(EEG.chaninfo, 'topoplot');
+EEG.chaninfo = rmfield(EEG.chaninfo, 'originalnosedir');
 
 % Step 5: Recomputing head center (for display only) Optional
 EEG = pop_chanedit(EEG, 'eval','chans = pop_chancenter( chans, [],[])');

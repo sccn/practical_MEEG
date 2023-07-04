@@ -68,7 +68,7 @@ EEG = pop_multifit(EEG, choosenIC, 'threshold', 100, 'dipoles', 2, 'plotopt', {'
 
 %% Plot of all brain component dipoles
 % There might be a coregistration issue with MEG as components tend to be frontal
-pop_dipplot( EEG, Brain_comps ,'mri',fullfile(dipfitpath,'/standard_BEM/standard_mri.mat'),'normlen','on', 'rvrange', 0.2);
+pop_dipplot( EEG, Brain_comps ,'mri',fullfile(dipfitpath,'/standard_BEM/standard_mri.mat'),'normlen','on', 'rvrange', 15);
 
 %% ERP Image Dipole on Fusiform Area
 % Changing dipolarity
